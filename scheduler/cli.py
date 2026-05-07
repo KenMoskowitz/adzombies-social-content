@@ -91,8 +91,20 @@ def connect_gemini():
 
 @connect.command(name="facebook")
 def connect_facebook():
-    """Authorize Facebook Page access."""
+    """Authorize Facebook Page access (OAuth callback flow)."""
     facebook.connect()
+
+
+@connect.command(name="facebook-manual")
+@click.argument("app_id")
+@click.argument("app_secret")
+@click.argument("short_token")
+def connect_facebook_manual(app_id, app_secret, short_token):
+    """Connect Facebook using a token from Graph API Explorer.
+
+    Get a short-lived token at: https://developers.facebook.com/tools/explorer
+    """
+    facebook.connect_manual(app_id, app_secret, short_token)
 
 
 @connect.command(name="instagram")

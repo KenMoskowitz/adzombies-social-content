@@ -45,6 +45,62 @@ class _CallbackHandler(http.server.BaseHTTPRequestHandler):
         pass
 
 
+def connect_manual(app_id: str, app_secret: str, short_token: str):
+    """Connect using a short-lived token from Graph API Explorer."""
+    # Exchange short-lived user token for long-lived token
+    r = requests.get(
+        f"{GRAPH}/oauth/access_token",
+        params={
+            "grant_type": "fb_exchange_token",
+            "client_id": app_id,
+            "client_secret": app_secret,
+            "fb_exchange_token": short_token,
+        },
+    )
+    r.raise_for_status()
+    long_token = r.json()["access_token"]
+    expires_in = r.json().get("expires_in", 5184000)
+
+    # Get pages
+    r = requests.get(f"{GRAPH}/me/accounts", params={"access_token": long_token})
+    r.raise_for_status()
+    pages = r.json().get("data", [])
+
+    if not pages:
+        click.echo("No Facebook Pages found. Make sure your Page is linked to this account.")
+        return
+
+    click.echo("\nFound Pages:")
+    for i, page in enumerate(pages):
+        click.echo(f"  {i+1}. {page['name']} ({page['id']})")
+
+    # Auto-select if only one page
+    if len(pages) == 1:
+        page = pages[0]
+        click.echo(f"Using: {page['name']}")
+    else:
+        idx = int(input("Which page number is Ad Zombies? ")) - 1
+        page = pages[idx]
+
+    page_token = page["access_token"]
+    page_id = page["id"]
+
+    expires_at = datetime.fromtimestamp(
+        time.time() + expires_in, tz=timezone.utc
+    ).isoformat()
+
+    cfg = config.load()
+    cfg["connections"]["facebook_app_id"] = app_id
+    cfg["connections"]["facebook_app_secret"] = app_secret
+    cfg["connections"]["facebook_page_id"] = page_id
+    cfg["connections"]["facebook_access_token"] = page_token
+    cfg["connections"]["facebook_token_expires"] = expires_at
+    config.save(cfg)
+
+    click.echo(f"\nFacebook connected. Page: {page['name']} ({page_id})")
+    click.echo(f"Token good until: {expires_at[:10]}")
+
+
 def connect():
     cfg = config.load()
     conn = cfg["connections"]
@@ -111,51 +167,7 @@ def connect():
     r.raise_for_status()
     short_token = r.json()["access_token"]
 
-    # Exchange for long-lived token
-    r = requests.get(
-        f"{GRAPH}/oauth/access_token",
-        params={
-            "grant_type": "fb_exchange_token",
-            "client_id": app_id,
-            "client_secret": app_secret,
-            "fb_exchange_token": short_token,
-        },
-    )
-    r.raise_for_status()
-    long_token = r.json()["access_token"]
-    expires_in = r.json().get("expires_in", 5184000)
-
-    # Get pages
-    r = requests.get(f"{GRAPH}/me/accounts", params={"access_token": long_token})
-    r.raise_for_status()
-    pages = r.json().get("data", [])
-
-    if not pages:
-        click.echo("No Facebook Pages found on this account. Make sure your Page is linked.")
-        return
-
-    click.echo("\nFound Pages:")
-    for i, page in enumerate(pages):
-        click.echo(f"  {i+1}. {page['name']} ({page['id']})")
-
-    idx = click.prompt("Which page is Ad Zombies?", type=int, default=1) - 1
-    page = pages[idx]
-
-    page_token = page["access_token"]
-    page_id = page["id"]
-
-    expires_at = datetime.fromtimestamp(
-        time.time() + expires_in, tz=timezone.utc
-    ).isoformat()
-
-    cfg = config.load()
-    cfg["connections"]["facebook_page_id"] = page_id
-    cfg["connections"]["facebook_access_token"] = page_token
-    cfg["connections"]["facebook_token_expires"] = expires_at
-    config.save(cfg)
-
-    click.echo(f"\nFacebook connected. Page: {page['name']} ({page_id})")
-    click.echo(f"Token good until: {expires_at[:10]}")
+    connect_manual(app_id, app_secret, short_token)
 
 
 def post_text(message: str, scheduled_unix: int | None = None) -> str:
