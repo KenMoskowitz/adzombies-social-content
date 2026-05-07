@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adzombies-social-scheduler"
+version = "1.0.0"
+description = "Ad Zombies social media scheduler"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.1.0",
+    "requests>=2.31.0",
+    "google-auth>=2.23.0",
+    "google-auth-oauthlib>=1.1.0",
+    "google-api-python-client>=2.103.0",
+    "google-generativeai>=0.8.0",
+]
+
+[project.scripts]
+az-social = "scheduler.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["scheduler*"]
