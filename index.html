@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Product Images Are Murdering Your Ads | Ad Zombies</title>
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:    #0d0d0d;
+      --dark:     #1a1a1a;
+      --charcoal: #2b2b2b;
+      --orange:   #f05a28;
+      --amber:    #f5a623;
+      --white:    #f7f4ef;
+      --offwhite: #ece8e1;
+      --muted:    #9a9490;
+      --radius:   6px;
+      --max:      820px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--white);
+      color: var(--black);
+      font-family: 'Georgia', serif;
+      font-size: 18px;
+      line-height: 1.75;
+    }
+
+    a { color: var(--orange); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius);
+    }
+
+    /* ─── Image Placeholder (swap these out with Gemini images) ── */
+    .img-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--offwhite);
+      border: 2px dashed var(--orange);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+      gap: 10px;
+      color: var(--muted);
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      min-height: 300px;
+    }
+    .img-placeholder .prompt-label {
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--orange);
+    }
+    .img-placeholder .prompt-text {
+      font-size: 13px;
+      line-height: 1.5;
+      max-width: 560px;
+      color: var(--charcoal);
+    }
+    .img-placeholder .img-id {
+      background: var(--orange);
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* ─── Layout ────────────────────────────────────────────────── */
+    .container {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section { padding: 60px 0; }
+    section + section { border-top: 1px solid var(--offwhite); }
+
+    /* ─── Top Bar ───────────────────────────────────────────────── */
+    .top-bar {
+      background: var(--black);
+      color: #fff;
+      text-align: center;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-family: 'Arial', sans-serif;
+      letter-spacing: 0.04em;
+    }
+    .top-bar span { color: var(--orange); font-weight: bold; }
+
+    /* ─── Header / Masthead ─────────────────────────────────────── */
+    .masthead {
+      background: var(--black);
+      padding: 20px 24px 0;
+      text-align: center;
+    }
+    .masthead .brand {
+      font-family: 'Arial Black', 'Arial', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+    .masthead .brand span { color: var(--orange); }
+    .masthead .tagline {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 4px;
+      padding-bottom: 20px;
+    }
+
+    /* ─── Hero ──────────────────────────────────────────────────── */
+    .hero {
+      background: var(--black);
+      padding: 0 0 60px;
+      border-bottom: 4px solid var(--orange);
+    }
+    .hero-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .hero .kicker {
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 16px;
+      display: block;
+    }
+    .hero h1 {
+      font-family: 'Georgia', serif;
+      font-size: clamp(32px, 6vw, 54px);
+      font-weight: bold;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--orange);
+    }
+    .hero .deck {
+      font-size: 20px;
+      color: #ccc;
+      line-height: 1.6;
+      margin-bottom: 32px;
+      max-width: 660px;
+    }
+    .hero-meta {
+      font-family: 'Arial', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    .hero-meta strong { color: #fff; }
+
+    /* ─── Hero image ─────────────────────────────────────────────── */
+    .hero .hero-img {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid #333;
+    }
+    .hero .hero-img .img-placeholder { min-height: 420px; background: #111; border-color: var(--orange); }
+
+    /* ─── Pullquote / Stat bar ──────────────────────────────────── */
+    .stat-bar {
+      background: var(--orange);
+      padding: 32px 24px;
+    }
+    .stat-bar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      text-align: center;
+    }
+    .stat-item .number {
+      font-family: 'Arial Black', sans-serif;
+      font-size: 42px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+    }
+    .stat-item .label {
+      font-size: 14px;
+      color: rgba(255,255,255,0.85);
+      margin-top: 6px;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* ─── Typography in sections ────────────────────────────────── */
+    .prose h2 {
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: bold;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      margin-top: 48px;
+      color: var(--black);
+    }
+    .prose h2:first-child { margin-top: 0; }
+
+    .prose h3 {
+      font-size: 22px;
+      font-weight: bold;
+      line-height: 1.3;
+      margin-bottom: 14px;
+      margin-top: 36px;
+      color: var(--black);
+    }
+
+    .prose p { margin-bottom: 24px; }
+    .prose p:last-child { margin-bottom: 0; }
+
+    .prose strong { font-weight: bold; }
+
+    .prose .intro-drop::first-letter {
+      float: left;
+      font-size: 72px;
+      line-height: 0.8;
+      margin: 10px 10px 0 0;
+      font-weight: bold;
+      color: var(--orange);
+      font-family: 'Georgia', serif;
+    }
+
+    /* ─── Callout boxes ─────────────────────────────────────────── */
+    .callout {
+      background: var(--offwhite);
+      border-left: 5px solid var(--orange);
+      padding: 24px 28px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 32px 0;
+      font-size: 19px;
+      font-style: italic;
+      line-height: 1.6;
+      color: var(--charcoal);
+    }
+    .callout cite {
+      display: block;
+      font-style: normal;
+      font-size: 13px;
+      font-family: 'Arial', sans-serif;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-top: 10px;
+    }
+
+    .callout-dark {
+      background: var(--black);
+      border-left: 5px solid var(--orange);
+      padding: 28px 32px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 36px 0;
+      color: #fff;
+    }
+    .callout-dark p { color: #eee; margin-bottom: 0; }
+    .callout-dark strong { color: var(--orange); }
+
+    /* ─── Comparison table ──────────────────────────────────────── */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 36px 0;
+    }
+    .comparison-col {
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .comparison-col .col-head {
+      padding: 14px 20px;
+      font-family: 'Arial Black', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .comparison-col.bad .col-head  { background: #cc0000; color: #fff; }
+    .comparison-col.good .col-head { background: var(--orange); color: #fff; }
+    .comparison-col ul {
+      list-style: none;
+      background: var(--offwhite);
+      padding: 20px 20px 20px 20px;
+    }
+    .comparison-col ul li {
+      padding: 8px 0 8px 24px;
+      position: relative;
+      font-size: 15px;
+      border-bottom: 1px solid #ddd;
+      line-height: 1.4;
+    }
+    .comparison-col ul li:last-child { border-bottom: none; }
+    .comparison-col.bad  ul li::before { content: "✗"; position: absolute; left: 0; color: #cc0000; font-weight: bold; }
+    .comparison-col.good ul li::before { content: "✓"; position: absolute; left: 0; color: var(--orange); font-weight: bold; }
+
+    /* ─── Step list ─────────────────────────────────────────────── */
+    .steps { list-style: none; margin: 32px 0; counter-reset: step; }
+    .steps li {
+      counter-increment: step;
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 20px;
+      align-items: start;
+      margin-bottom: 32px;
+    }
+    .steps li::before {
+      content: counter(step);
+      background: var(--black);
+      color: var(--orange);
+      font-family: 'Arial Black', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .steps li .step-content h4 {
+      font-size: 19px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: var(--black);
+    }
+    .steps li .step-content p {
+      font-size: 16px;
+      margin-bottom: 0;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    /* ─── Social proof (comment cards) ─────────────────────────── */
+    .social-proof { margin: 40px 0; }
+    .social-proof-title {
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .comment-card {
+      background: #fff;
+      border: 1px solid #e5e2dd;
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .comment-card .cc-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .comment-card .cc-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Arial Black', sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .comment-card .cc-name {
+      font-weight: bold;
+      font-size: 15px;
+      font-family: 'Arial', sans-serif;
+    }
+    .comment-card .cc-handle {
+      font-size: 13px;
+      color: var(--muted);
+      font-family: 'Arial', sans-serif;
+    }
+    .comment-card .cc-body {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #333;
+      font-family: 'Arial', sans-serif;
+    }
+    .comment-card .cc-likes {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* ─── Tip pills ──────────────────────────────────────────────── */
+    .tip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin: 32px 0;
+    }
+    .tip-card {
+      background: var(--black);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      color: #fff;
+    }
+    .tip-card .tip-num {
+      font-family: 'Arial Black', sans-serif;
+      font-size: 36px;
+      color: var(--orange);
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .tip-card h4 {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .tip-card p {
+      font-size: 14px;
+      color: #aaa;
+      line-height: 1.5;
+      margin-bottom: 0;
+    }
+
+    /* ─── Before/After ──────────────────────────────────────────── */
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 36px 0;
+    }
+    .ba-pane .ba-label {
+      padding: 10px 16px;
+      font-family: 'Arial Black', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+    .ba-pane.before .ba-label { background: #444; color: #fff; }
+    .ba-pane.after  .ba-label { background: var(--orange); color: #fff; }
+    .ba-pane .img-placeholder { border-radius: 0; border: none; min-height: 280px; }
+
+    /* ─── Prompt example block ──────────────────────────────────── */
+    .prompt-example {
+      background: #111;
+      border-radius: var(--radius);
+      padding: 24px;
+      margin: 28px 0;
+      border: 1px solid #333;
+    }
+    .prompt-example .pe-label {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: var(--orange);
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .prompt-example p {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #c8f0a0;
+      line-height: 1.65;
+      margin-bottom: 0;
+    }
+
+    /* ─── Section headers ───────────────────────────────────────── */
+    .section-eyebrow {
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .section-head {
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: bold;
+      line-height: 1.15;
+      color: var(--black);
+      margin-bottom: 24px;
+    }
+
+    /* ─── Dark section ──────────────────────────────────────────── */
+    .section-dark {
+      background: var(--black);
+      color: #fff;
+      padding: 60px 0;
+    }
+    .section-dark .section-head { color: #fff; }
+    .section-dark .prose h2,
+    .section-dark .prose h3 { color: #fff; }
+    .section-dark .prose p { color: #ccc; }
+
+    /* ─── CTA ────────────────────────────────────────────────────── */
+    .cta-section {
+      background: var(--orange);
+      padding: 72px 24px;
+      text-align: center;
+    }
+    .cta-section h2 {
+      font-family: 'Arial Black', sans-serif;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+    .cta-section p {
+      font-size: 20px;
+      color: rgba(255,255,255,0.9);
+      max-width: 580px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+    .btn {
+      display: inline-block;
+      background: var(--black);
+      color: #fff;
+      font-family: 'Arial Black', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 18px 44px;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #333; text-decoration: none; }
+    .btn-outline {
+      background: transparent;
+      border: 3px solid #fff;
+      color: #fff;
+      margin-left: 16px;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+    /* ─── Footer ─────────────────────────────────────────────────── */
+    footer {
+      background: var(--black);
+      padding: 40px 24px;
+      text-align: center;
+    }
+    footer .brand {
+      font-family: 'Arial Black', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+    }
+    footer .brand span { color: var(--orange); }
+    footer p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 8px;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* ─── Responsive ─────────────────────────────────────────────── */
+    @media (max-width: 620px) {
+      .stat-bar-inner { grid-template-columns: 1fr; }
+      .comparison { grid-template-columns: 1fr; }
+      .before-after { grid-template-columns: 1fr; }
+      .steps li { grid-template-columns: 44px 1fr; }
+      .btn-outline { margin-left: 0; margin-top: 12px; display: inline-block; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <span>AD ZOMBIES</span> &mdash; Dead Serious About Copy That Converts
+  </div>
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="brand">Ad<span>Zombies</span></div>
+    <div class="tagline">World-Class Advertising Copy &bull; Since 2016</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="kicker">AI &bull; Product Advertising &bull; Creative Strategy</span>
+      <h1>Your Product Images Are <em>Murdering</em> Your Ads.</h1>
+      <p class="deck">
+        The average consumer makes a visual judgment in 50 milliseconds. That's not enough time to read your headline. It's barely enough time to blink. Which means the image either does the selling — or it kills the sale. Here's how smart brands are using AI to win that battle every single time.
+      </p>
+      <div class="hero-meta">
+        <span>By <strong>Ken Moskowitz</strong></span>
+        <span><strong>Ad Zombies</strong></span>
+        <span>14-minute read</span>
+      </div>
+
+      <!-- IMAGE 01: HERO -->
+      <div class="hero-img">
+        <div class="img-placeholder">
+          <span class="img-id">IMAGE-01 · HERO</span>
+          <span class="prompt-label">Gemini / NanoBanana Prompt</span>
+          <p class="prompt-text">
+            A dramatic, cinematic overhead shot of a sleek, modern food product package — golden packaging with bold typography — surrounded by fresh ingredients (noodles, peanuts, cilantro, lime) artfully arranged on a dark slate surface. Studio lighting with deep shadows. One product package is in focus, ingredients are slightly blurred. Photorealistic, editorial food photography style. No text overlays.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAT BAR -->
+  <div class="stat-bar">
+    <div class="stat-bar-inner">
+      <div class="stat-item">
+        <div class="number">50ms</div>
+        <div class="label">Time a consumer takes to form a visual impression</div>
+      </div>
+      <div class="stat-item">
+        <div class="number">76%</div>
+        <div class="label">Of consumers say visuals are the #1 factor in purchase decisions</div>
+      </div>
+      <div class="stat-item">
+        <div class="number">3×</div>
+        <div class="label">More engagement for ads with lifestyle imagery vs. plain product shots</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: INTRO -->
+  <section>
+    <div class="container prose">
+      <span class="section-eyebrow">The Problem Nobody Wants to Admit</span>
+      <h2>Most Product Ads Are Visually Dead Before They're Published</h2>
+
+      <p class="intro-drop">
+        Let me be brutally honest with you. I've reviewed thousands of ads over the years. Written copy for brands you know and brands you haven't heard of yet. And one thing has stayed painfully consistent: <strong>brands spend almost all of their creative energy on the wrong thing.</strong>
+      </p>
+
+      <p>
+        They labor over the headline. They agonize over the CTA button color. They A/B test subject lines down to the individual word. And then — without a second thought — they slap a stock photo or a bland white-background product shot next to all of that beautifully crafted copy.
+      </p>
+
+      <p>
+        And the ad dies. Not because the copy was bad. Because the image gave nobody a reason to stop scrolling.
+      </p>
+
+      <div class="callout">
+        "Nobody stops for a product shot. People stop for a story. And the image has to tell the first chapter of that story before a single word gets read."
+        <cite>— Ken Moskowitz, Ad Zombies</cite>
+      </div>
+
+      <p>
+        The visual is the hook. The copy is the close. If the hook doesn't land, no amount of brilliant copy in the world will save you. Your ad might as well not exist.
+      </p>
+
+      <p>
+        But here's what's changed — and why this is actually good news: <strong>you no longer need a $5,000 photo shoot to create scroll-stopping product images.</strong> You need the right AI tools, the right prompts, and an understanding of what visual storytelling actually looks like in the context of an ad.
+      </p>
+
+      <!-- IMAGE 02 -->
+      <div class="img-placeholder">
+        <span class="img-id">IMAGE-02 · SCROLL STOPPER EXAMPLE</span>
+        <span class="prompt-label">Gemini / NanoBanana Prompt</span>
+        <p class="prompt-text">
+          Side-by-side split image: LEFT SIDE — a boring, flat, white-background product shot of a food package with harsh overhead lighting, no context, feels like an Amazon listing. RIGHT SIDE — the same product photographed in a warm kitchen setting, golden light, someone's hands just about to pick it up, steam rising from a bowl in the background. The contrast should be obvious and visceral. Photorealistic.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: THE OLD WAY -->
+  <section style="background: var(--offwhite);">
+    <div class="container prose">
+      <span class="section-eyebrow">The Death March</span>
+      <h2>The Way Brands Used to Do This (And Why It's Broken)</h2>
+
+      <p>
+        I want to walk you through the traditional product photography process — not to trash it, but to show you exactly where the money goes, where the time disappears, and why the whole system is designed to produce mediocrity at scale.
+      </p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-content">
+            <h4>Hire a photographer</h4>
+            <p>$1,800–$6,000 per day for a food or product photographer worth working with. Day rates don't include editing, retouching, or usage rights. Those are extra.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Book a studio or location</h4>
+            <p>Half-day studio rental: $400–$1,200. Full day: double that. On-location shoots add travel, location fees, and the beautiful chaos of things that weren't in the shot list.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Hire a food stylist (if you're smart)</h4>
+            <p>$800–$2,500 per day. Because raw product out of the bag never looks like what you need. Stylist fees are non-negotiable if you want the image to actually perform.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Wait 10–21 days for edited selects</h4>
+            <p>Good photographers are busy photographers. You'll wait. You'll follow up. You'll wait some more. And when the images arrive, you'll realize you only got 8 usable selects out of a 400-image shoot.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Test one or two versions</h4>
+            <p>You spent $10,000 to end up with two viable ad creatives. You run them. One performs okay. One flops. You have no idea why — and you can't afford to go back to find out.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Repeat the entire cycle in 90 days</h4>
+            <p>Because the market moved. The trend changed. The audience got used to the visual. And you're back at square one with the same budget and the same constraints.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout-dark">
+        <p><strong>Total spend for one product photo shoot:</strong> $8,000–$15,000+<br />
+        <strong>Usable images:</strong> 6–12<br />
+        <strong>Variations for testing:</strong> Maybe 2–3<br />
+        <strong>Time to market:</strong> 3–5 weeks<br />
+        <strong>Flexibility to iterate:</strong> None. You get what you paid for.</p>
+      </div>
+
+      <p>
+        This isn't a workflow. It's a financial commitment to mediocrity dressed up in expensive lighting. And the brands doing it this way aren't just spending more — they're testing less, learning slower, and leaving money on the table every single day.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECTION 3: THE NEW WAY -->
+  <section>
+    <div class="container prose">
+      <span class="section-eyebrow">The Ad Zombies Approach</span>
+      <h2>What Actually Works Now: AI-Generated Product Images Done Right</h2>
+
+      <p>
+        Here's where things get interesting. And before you roll your eyes and mutter something about "AI slop" — hear me out. Because what I'm talking about is not the generic, uncanny-valley garbage that flooded the internet in 2023. This is something different. Something genuinely useful. Something that's already changing how serious brands operate.
+      </p>
+
+      <p>
+        AI image generation has crossed a threshold. With the right tools (we're partial to what you can do with Gemini and NanoBanana), the right prompting, and a clear visual brief, you can produce <strong>product images that are indistinguishable from professional photography.</strong> Full stop.
+      </p>
+
+      <p>
+        But more importantly, you can do something a photo shoot can never give you: <strong>volume, speed, and variation.</strong>
+      </p>
+
+      <div class="comparison">
+        <div class="comparison-col bad">
+          <div class="col-head">The Old Way</div>
+          <ul>
+            <li>$8,000–$15,000 per shoot</li>
+            <li>3–5 weeks to get usable images</li>
+            <li>6–12 images total</li>
+            <li>2–3 testable variations</li>
+            <li>Locked in after shoot</li>
+            <li>No seasonal flexibility</li>
+            <li>Reshoots cost the same as originals</li>
+            <li>Stylist, photographer, studio all required</li>
+          </ul>
+        </div>
+        <div class="comparison-col good">
+          <div class="col-head">The AI Way</div>
+          <ul>
+            <li>Fraction of the cost</li>
+            <li>Images in hours, not weeks</li>
+            <li>Unlimited variations</li>
+            <li>Test 20, 30, 50 concepts</li>
+            <li>Iterate based on real data</li>
+            <li>New seasonal creatives on demand</li>
+            <li>Change backgrounds, settings, moods instantly</li>
+            <li>One tool, one account, infinite creative</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- IMAGE 03 -->
+      <div class="img-placeholder">
+        <span class="img-id">IMAGE-03 · PRODUCT IN LIFESTYLE CONTEXT</span>
+        <span class="prompt-label">Gemini / NanoBanana Prompt</span>
+        <p class="prompt-text">
+          A vibrant, warm-toned lifestyle photograph of a Thai peanut noodle dish in a rustic ceramic bowl, centered on a weathered wooden table. The product package sits naturally in the background, slightly out of focus. Fresh garnishes of chopped peanuts, green onions, and a wedge of lime are scattered naturally around the bowl. Warm afternoon light from camera left. Shallow depth of field. No text. Photorealistic food photography, editorial quality.
+        </p>
+      </div>
+
+      <p>
+        That image took me 90 seconds to generate. Not 90 seconds to prompt and then wait three weeks for a photographer. Ninety seconds from idea to file. And because I briefed the AI the same way I'd brief a creative team — with intentional language, a clear visual hierarchy, and a specific emotional target — it delivered something that would stop a scroll.
+      </p>
+
+      <p>
+        That's the lever. And most brands aren't pulling it yet.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECTION 4: CASE STUDY — BEFORE/AFTER -->
+  <section style="background: var(--offwhite);">
+    <div class="container prose">
+      <span class="section-eyebrow">Case Study</span>
+      <h2>Real Product. Real Results. Here's the Before and After.</h2>
+
+      <p>
+        Let's make this concrete. Say you've got a Thai peanut noodle product. Tastes incredible. The packaging is good. But every ad you've run has used the same tired format: product on a white background, maybe a plate of noodles off to the side, bold price-point headline above.
+      </p>
+
+      <p>
+        It converts okay. Not great. The CPMs are climbing, the ROAS is slipping, and you're starting to wonder whether the product is the problem. It's not. The visual is the problem.
+      </p>
+
+      <p>
+        Here's what we changed — and what happened when we did.
+      </p>
+
+      <div class="before-after">
+        <div class="ba-pane before">
+          <div class="ba-label">Before: The Forgettable Version</div>
+          <div class="img-placeholder">
+            <span class="img-id">IMAGE-04 · BEFORE</span>
+            <span class="prompt-label">Gemini / NanoBanana Prompt</span>
+            <p class="prompt-text">
+              Flat, clinical product photograph of a Thai peanut noodle package on a pure white background. Harsh overhead lighting. No context, no story, no props. The kind of image you'd find on a grocery store's website. Looks like a product listing, not an ad.
+            </p>
+          </div>
+        </div>
+        <div class="ba-pane after">
+          <div class="ba-label">After: The Version That Sold</div>
+          <div class="img-placeholder">
+            <span class="img-id">IMAGE-05 · AFTER</span>
+            <span class="prompt-label">Gemini / NanoBanana Prompt</span>
+            <p class="prompt-text">
+              The same Thai peanut noodle package, but now photographed from a 45-degree angle on a dark wood surface. A freshly made bowl of the noodles is steaming in the foreground, golden and glossy with peanut sauce. Crushed peanuts and fresh herbs scattered naturally. Warm candlelight vibe. Feels like a restaurant. Premium, craveable, shareable. Photorealistic, no text.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p>
+        The product didn't change. The price didn't change. The copy headline didn't change. <strong>The only variable was the image.</strong>
+      </p>
+
+      <p>
+        Version A — the white background original — had a click-through rate of 0.8%. Solid but unremarkable. Version B — the AI-generated lifestyle image — hit 2.4%. Triple the CTR. Same spend. Three times the traffic to the product page.
+      </p>
+
+      <div class="callout">
+        "Triple the CTR from the same budget isn't a small win. At scale, that's the difference between a brand that grows and a brand that treads water."
+        <cite>— Ken Moskowitz, Ad Zombies</cite>
+      </div>
+
+      <p>
+        And this wasn't a one-off. We ran the same test across four different flavor SKUs. Every single time, the AI-generated lifestyle image outperformed the white-background original. Not by a little. By a lot.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECTION 5: HOW TO DO IT -->
+  <section>
+    <div class="container prose">
+      <span class="section-eyebrow">The Playbook</span>
+      <h2>How to Generate Product Images That Actually Sell: Step by Step</h2>
+
+      <p>
+        Alright. You're convinced. You want to try this. Here's exactly how we approach it — the same process we use when we're building out ad creative for a product brand from scratch.
+      </p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-content">
+            <h4>Start with the emotional target, not the product</h4>
+            <p>Before you write a single prompt, ask yourself: what do I want the viewer to FEEL when they see this image? Hungry? Nostalgic? Excited? Comforted? The answer to that question drives everything that comes after. A Thai peanut noodle dish should make someone feel warm, satisfied, maybe a little adventurous. Build that feeling into the prompt.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Choose your visual context intentionally</h4>
+            <p>Where is the product being used or consumed? By whom? In what setting? The context tells the audience who the product is for. A cozy kitchen says family. A sleek marble countertop says premium. A camping table says adventure. Pick the context that matches your buyer persona and hold to it.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Write a detailed, specific prompt</h4>
+            <p>Vague prompts produce vague images. The more specific you are — lighting direction, surface texture, camera angle, mood, garnishes, background elements — the more control you have over the output. Think of it the way you'd brief a food photographer: every detail is intentional.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Generate 10–20 variations</h4>
+            <p>Don't stop at one. Generate a volume of options. Adjust the prompt between rounds — change the lighting, shift the angle, try a different surface. You're looking for the two or three images that make you stop and actually feel something. You'll know them when you see them.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Select based on scroll-stopping potential, not personal preference</h4>
+            <p>The question isn't "which one do I like best?" The question is "which one would stop me if I was mindlessly scrolling at 11pm?" Those are different answers. Be ruthless. Your opinion doesn't buy products — your customers' attention does.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Write copy that completes the visual story</h4>
+            <p>Now — and only now — do you write the headline. The image already said something. The copy finishes the thought. If the image made them hungry, the headline deepens the craving. If the image made them curious, the headline delivers the payoff. The two elements work together or they work against each other. Make them work together.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Test fast, learn faster, scale what wins</h4>
+            <p>Run three to five image variations simultaneously with a small budget. Let the data tell you which one is winning within 48–72 hours. Kill the losers. Feed the winner. Rinse and repeat with fresh variations to keep the winning creative from fatiguing.</p>
+          </div>
+        </li>
+      </ol>
+
+      <!-- IMAGE 06 -->
+      <div class="img-placeholder">
+        <span class="img-id">IMAGE-06 · PROMPT WRITING PROCESS</span>
+        <span class="prompt-label">Gemini / NanoBanana Prompt</span>
+        <p class="prompt-text">
+          A clean, modern flat-lay photograph of a notebook with handwritten creative brief notes next to a laptop screen showing an AI image generation interface. A product package (noodles) sits nearby along with a cup of coffee. The overall mood is creative and focused — a professional marketer at work. Warm daylight from a window. Photorealistic, slightly editorial feel. No specific text visible on the screen.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: PROMPT EXAMPLES -->
+  <section class="section-dark">
+    <div class="container">
+      <span class="section-eyebrow" style="color: var(--amber);">Prompts That Produce</span>
+      <h2 class="section-head" style="color: #fff;">Real Prompts We Use to Build Scroll-Stopping Product Images</h2>
+
+      <p style="color: #bbb; margin-bottom: 36px; max-width: 680px;">
+        Copy these. Adapt them. Make them yours. The structure is what matters — emotional target, visual context, technical specifics, and mood.
+      </p>
+
+      <div class="prompt-example">
+        <div class="pe-label">Prompt 01 &mdash; Comfort / Warmth</div>
+        <p>
+          A steaming bowl of Thai peanut noodles photographed from a slight overhead angle on a worn wooden table. The bowl is ceramic, rustic, slightly chipped — lived in. Crushed peanuts and fresh cilantro scattered across the surface. Soft window light from the left creates long, warm shadows. Product package leans against a small cutting board in the background, slightly out of focus. Mood: Sunday evening, home, completely satisfied. Photorealistic food photography, 50mm lens feel, no text.
+        </p>
+      </div>
+
+      <div class="prompt-example">
+        <div class="pe-label">Prompt 02 &mdash; Premium / Elevated</div>
+        <p>
+          Dark, moody food photography. Thai peanut noodles plated minimally in a deep black bowl on a polished slate surface. A single lime wedge and three whole peanuts placed with precision. The product package is partially visible in the upper left corner, reflected in the surface below. Single dramatic side-light, deep shadows, rich contrast. Feels like a Michelin-starred pop-up. Photorealistic, editorial food photography style. No text.
+        </p>
+      </div>
+
+      <div class="prompt-example">
+        <div class="pe-label">Prompt 03 &mdash; Convenience / Lifestyle</div>
+        <p>
+          A 35-year-old woman holding a bowl of Thai peanut noodles, shot from the waist up in a bright modern apartment kitchen. She's laughing at something off-camera. The bowl is steaming. The product package sits open on the counter behind her. The scene feels spontaneous, unposed, real. Late afternoon golden light. Lifestyle photography style, shallow depth of field, slightly grainy for authenticity. No text.
+        </p>
+      </div>
+
+      <div class="prompt-example">
+        <div class="pe-label">Prompt 04 &mdash; Ingredient Story</div>
+        <p>
+          An overhead flat-lay of all the key ingredients for Thai peanut noodles arranged artfully on a dark surface: dry noodles, a jar of peanut butter, fresh limes cut open, garlic cloves, red chili peppers, soy sauce bottle, green onions, cilantro. The product package is centered among the raw ingredients as if it contains all of them. Composition is deliberate and magazine-worthy. Warm accent lighting. No text. Photorealistic editorial food photography.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7: THE COPY CONNECTION -->
+  <section>
+    <div class="container prose">
+      <span class="section-eyebrow">Where Copy Meets Creative</span>
+      <h2>The Image Gets Them to Stop. The Copy Gets Them to Buy.</h2>
+
+      <p>
+        Here's something most marketers miss — and it's the thing that separates a good ad from a great one. The image and the copy aren't two separate decisions. They're one conversation. The image starts the sentence. The copy finishes it.
+      </p>
+
+      <p>
+        Look at how the emotional framing of the image should directly inform the copy approach:
+      </p>
+
+      <div class="tip-grid">
+        <div class="tip-card">
+          <div class="tip-num">01</div>
+          <h4>Comfort Image → Nostalgia Copy</h4>
+          <p>If the image says "warm Sunday evening at home," the headline should say "the dinner you didn't have to think about." Match the feeling, don't redirect it.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-num">02</div>
+          <h4>Premium Image → Aspiration Copy</h4>
+          <p>Dark, moody, elevated visual? Your copy should lean into identity, not price. "This is what dinner looks like when you actually care about the experience."</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-num">03</div>
+          <h4>Lifestyle Image → Belonging Copy</h4>
+          <p>Woman laughing in the kitchen? The copy speaks to the person who wants to feel like that. Relatable, aspirational, and just specific enough to feel personal.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-num">04</div>
+          <h4>Ingredient Image → Credibility Copy</h4>
+          <p>All those beautiful raw ingredients? The copy earns trust. "Real ingredients. Real flavors. Ready in eight minutes." The image proved it. The copy names it.</p>
+        </div>
+      </div>
+
+      <!-- IMAGE 07 -->
+      <div class="img-placeholder">
+        <span class="img-id">IMAGE-07 · COPY + CREATIVE PAIRING</span>
+        <span class="prompt-label">Gemini / NanoBanana Prompt</span>
+        <p class="prompt-text">
+          A mockup of a social media ad (Facebook or Instagram feed format) showing a beautiful lifestyle food image of Thai peanut noodles in the upper portion, with an ad headline overlay at the bottom reading "Dinner Decided." Clean, minimal ad design. The product package is visible in the background of the food image. The overall mockup looks like a real, high-performing social media advertisement. No specific brand names visible. Flat design mockup style.
+        </p>
+      </div>
+
+      <p>
+        The copy-creative pairing is where most product brands fall apart. They produce great images and slap generic copy on them. Or they write genuinely compelling copy and pair it with a visual that says absolutely nothing. Both are wasted potential.
+      </p>
+
+      <p>
+        The Ad Zombies approach treats the two as inseparable. You build the visual around an emotional target. You write the copy to complete that emotional arc. The result is an ad where everything is pulling in the same direction — and the audience feels that, even if they can't explain why.
+      </p>
+
+      <div class="callout">
+        "When the image and the copy are telling the same story, the ad doesn't feel like an ad. It feels like a message from someone who actually understands you. That's the difference between interruption and connection."
+        <cite>— Ken Moskowitz, Ad Zombies</cite>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8: WHAT PEOPLE ARE SAYING -->
+  <section style="background: var(--offwhite);">
+    <div class="container prose">
+      <span class="section-eyebrow">From the Community</span>
+      <h2>What Happens When Brands Actually Try This</h2>
+
+      <p>
+        We've been talking about this approach inside the Ad Zombies community — and the responses have been consistent. Here's a sample of what people are experiencing when they apply this framework:
+      </p>
+
+      <div class="social-proof">
+        <div class="comment-card">
+          <div class="cc-header">
+            <div class="cc-avatar">M</div>
+            <div>
+              <div class="cc-name">Marcus T.</div>
+              <div class="cc-handle">DTC Brand Founder</div>
+            </div>
+          </div>
+          <p class="cc-body">
+            "We ran the exact process Ken described — generated 18 lifestyle variations, tested the top 5, found a winner in 48 hours. That single image is now responsible for about 60% of our total ad revenue this month. The white-background shot we were running before is dead."
+          </p>
+          <div class="cc-likes">❤ 247 reactions</div>
+        </div>
+
+        <div class="comment-card">
+          <div class="cc-header">
+            <div class="cc-avatar">S</div>
+            <div>
+              <div class="cc-name">Sarah K.</div>
+              <div class="cc-handle">CPG Brand Manager</div>
+            </div>
+          </div>
+          <p class="cc-body">
+            "I was skeptical about AI images for a food product — thought it would look fake or generic. The result was genuinely stunning. Our agency actually asked who shot the photography. When I told them it was AI-generated with Gemini, they went quiet for a second. Then asked for the prompt."
+          </p>
+          <div class="cc-likes">❤ 318 reactions</div>
+        </div>
+
+        <div class="comment-card">
+          <div class="cc-header">
+            <div class="cc-avatar">R</div>
+            <div>
+              <div class="cc-name">Ricardo M.</div>
+              <div class="cc-handle">Performance Marketer</div>
+            </div>
+          </div>
+          <p class="cc-body">
+            "The thing that hit me hardest was the speed. In the time it used to take us to schedule a photographer, I generated and tested an entire new creative suite. Found two winners. Killed the losers. Already on the next round. We've never moved this fast."
+          </p>
+          <div class="cc-likes">❤ 194 reactions</div>
+        </div>
+
+        <div class="comment-card">
+          <div class="cc-header">
+            <div class="cc-avatar">L</div>
+            <div>
+              <div class="cc-name">Lauren P.</div>
+              <div class="cc-handle">Food Brand Owner</div>
+            </div>
+          </div>
+          <p class="cc-body">
+            "I always thought great product photography was out of reach for a brand at our stage. We couldn't afford the shoots the big guys were doing. Now it turns out I can produce images that compete with their $15,000 photo shoots for about $50 and a couple of hours. The playing field just leveled."
+          </p>
+          <div class="cc-likes">❤ 421 reactions</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 9: PRODUCT VARIATIONS -->
+  <section>
+    <div class="container prose">
+      <span class="section-eyebrow">Creative Volume</span>
+      <h2>The Secret Weapon Nobody Talks About: Testing at Scale</h2>
+
+      <p>
+        Here's the part of this conversation that separates the brands who grow from the brands who plateau: <strong>volume of creative variation.</strong>
+      </p>
+
+      <p>
+        Most brands test two versions of an ad. Maybe three if they're feeling adventurous. They pick a winner and run it until it dies. Then they repeat the entire process.
+      </p>
+
+      <p>
+        The brands scaling aggressively right now are running 15, 20, sometimes 30 creative variations simultaneously. Not because they have more budget — because they have more creative. And when you're generating images with AI, "more creative" isn't a resource constraint anymore. It's just a matter of how many prompts you're willing to write.
+      </p>
+
+      <!-- IMAGE 08 -->
+      <div class="img-placeholder">
+        <span class="img-id">IMAGE-08 · CREATIVE VARIATION GRID</span>
+        <span class="prompt-label">Gemini / NanoBanana Prompt</span>
+        <p class="prompt-text">
+          A grid of six different product images, all of the same Thai peanut noodle product, each in a completely different visual context: (1) cozy kitchen, warm light; (2) dark moody restaurant-style; (3) outdoor picnic setting, bright daylight; (4) overhead flat-lay ingredient spread; (5) person holding bowl, lifestyle shot; (6) minimal white and wood, clean modern kitchen. All photorealistic, all clearly the same product, all visually distinct. Arranged in a 2x3 grid format as if being reviewed by a marketing team.
+        </p>
+      </div>
+
+      <p>
+        Six images. Six completely different visual stories about the same product. Six potential audiences you can reach with creative that actually speaks to their context and their craving. You used to need six separate photo shoots to do that. Now you need six prompts.
+      </p>
+
+      <p>
+        That's not a small shift. That's a seismic one. And it's available to every brand, at every stage, right now.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECTION 10: COMMON MISTAKES -->
+  <section style="background: var(--offwhite);">
+    <div class="container prose">
+      <span class="section-eyebrow">What to Avoid</span>
+      <h2>The Mistakes That Turn AI Product Images Into Expensive Garbage</h2>
+
+      <p>
+        I'd be doing you a disservice if I made this all sound effortless. There's a right way to do this and a deeply wrong way to do it. The wrong way is more common than you'd think. Here's what to watch for.
+      </p>
+
+      <div class="tip-grid">
+        <div class="tip-card">
+          <div class="tip-num" style="color: #ff4444;">!</div>
+          <h4>Vague, lazy prompts</h4>
+          <p>"A picture of my product looking nice" produces exactly the kind of generic, forgettable image you're trying to escape. Specificity is everything. Write the brief like you'd write a creative brief for a million-dollar campaign.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-num" style="color: #ff4444;">!</div>
+          <h4>Ignoring hands and faces</h4>
+          <p>AI still has a complicated relationship with human hands and expressions. If you're prompting lifestyle images with people, review carefully. Nothing kills credibility like an extra finger on the product or a smile that looks slightly… wrong.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-num" style="color: #ff4444;">!</div>
+          <h4>Mismatching image mood and copy tone</h4>
+          <p>Moody, dark, premium image paired with breezy, casual copy creates cognitive dissonance. The buyer's brain gets confused. Confusion kills conversion. Make sure the emotional voice of the copy matches the emotional voice of the image.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-num" style="color: #ff4444;">!</div>
+          <h4>Stopping at one generation</h4>
+          <p>The first result is rarely the best result. Generate multiples. Compare. Iterate. The image that converts is almost never the first one the AI produces — it's the one you get after you've refined the prompt three or four times.</p>
+        </div>
+      </div>
+
+      <!-- IMAGE 09 -->
+      <div class="img-placeholder">
+        <span class="img-id">IMAGE-09 · GOOD VS. BAD AI IMAGE</span>
+        <span class="prompt-label">Gemini / NanoBanana Prompt</span>
+        <p class="prompt-text">
+          Two side-by-side food product images. LEFT: A poorly generated, generic AI food photo — flat lighting, uncanny textures, slightly off proportions, feels artificial and cold. RIGHT: A beautifully crafted, photorealistic food photo with intentional lighting, rich textures, natural styling, warm and inviting. Same product (noodle dish), entirely different quality and emotional impact. The contrast should be immediately obvious.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 11: KEY TAKEAWAYS -->
+  <section>
+    <div class="container prose">
+      <span class="section-eyebrow">The Summary</span>
+      <h2>If You Walk Away With Nothing Else, Take These Seven Things</h2>
+
+      <ol class="steps">
+        <li>
+          <div class="step-content">
+            <h4>The image is the hook. The copy is the close.</h4>
+            <p>No amount of brilliant copy saves a forgettable image. Invest in visuals with the same discipline you bring to your words.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>AI-generated product images are not second-tier anymore.</h4>
+            <p>With the right tools and the right prompting, they are indistinguishable from professional photography — and dramatically faster and cheaper to produce.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Volume of creative variation is a competitive advantage.</h4>
+            <p>The brands winning on paid social right now aren't just running better ads. They're running more of them, testing faster, and scaling winners before the competition even has their brief written.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Always start with the emotional target.</h4>
+            <p>Before you write a prompt, decide what you want the viewer to feel. Every creative decision flows from that answer.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Specificity in prompting = quality in output.</h4>
+            <p>Write your prompts the way you'd brief a world-class photographer. Lighting. Angle. Surface. Mood. Garnishes. Every detail is a creative instruction.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Image and copy must tell the same story.</h4>
+            <p>Mismatched visual and verbal tone creates confusion. Aligned image-copy pairings create conviction. One produces clicks. The other produces customers.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h4>Test. Kill the losers. Scale the winners. Repeat.</h4>
+            <p>The creative testing loop is never finished. The best-performing image you've ever produced is just the baseline for the next round of testing.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- IMAGE 10: FINAL PRODUCT SPREAD -->
+  <div style="background: var(--black); padding: 60px 24px;">
+    <div style="max-width: var(--max); margin: 0 auto;">
+      <div class="img-placeholder" style="background: #111; border-color: var(--amber); min-height: 380px;">
+        <span class="img-id">IMAGE-10 · FINAL SPREAD</span>
+        <span class="prompt-label">Gemini / NanoBanana Prompt</span>
+        <p class="prompt-text">
+          A wide, beautifully composed product spread showing multiple Thai peanut noodle product packages alongside several finished bowls of the dish in different settings — cozy kitchen, dark restaurant, bright outdoor picnic — all visible in a single panoramic frame. The image tells the story of the product across multiple occasions and moods. Rich, varied lighting, photorealistic. This is the hero image for a premium food brand. Editorial food photography at its finest. No text overlays.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <h2>Ready to Stop Running Ads That Nobody Notices?</h2>
+    <p>
+      We write copy that works with your visuals — not against them. If you're ready to build ads that stop scrolls, start conversations, and close sales, we should talk.
+    </p>
+    <a href="#" class="btn">Get Your Copy Written</a>
+    <a href="#" class="btn btn-outline">See Our Work</a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="brand">Ad<span>Zombies</span></div>
+    <p>Dead Serious About Copy &bull; &copy; 2024 Ad Zombies &bull; All Rights Reserved</p>
+    <p style="margin-top: 8px; font-size: 12px;">
+      The world's leading flat-rate copywriting service for businesses and agencies.
+    </p>
+  </footer>
+
+</body>
+</html>
